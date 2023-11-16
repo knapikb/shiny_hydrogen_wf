@@ -7,13 +7,20 @@ import shinyswatch
 
 app_ui = ui.page_fluid(
     shinyswatch.theme.darkly(),
+    ui.tags.style("body {font-family: Times}"),
+    ui.panel_title(
+        ('Hydrogen Wavefunctions'),
+        ),
+    ui.h3(
+        (' e',ui.tags.sup('-'),' Probability Distribution'),
+        style = f"font-size:1;"),
     ui.card(
         ui.layout_sidebar(
             ui.sidebar(   
                 ui.input_numeric("n","Principal quantum number, n", value=1),
                 ui.input_numeric("l","Azimuthal quantum number, l", value=0),
                 ui.input_numeric("m","Magnetic quantum number, m", value=0),
-                ui.input_numeric("a0","Scaling factor, a0", value=0.7)
+                ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
             ),
             {"style": "background-color: #000000"},
             ui.output_plot("plot1"),
@@ -37,9 +44,11 @@ def server(input, output, session):
 
         # Compute and visualize the wavefunction probability density
         psi = hwf.wave_function(a0_scale_factor, n, l, m)
+        plt.rcParams["font.family"] = "Times"
         prob_density = hwf.probability_density(psi)
         ax.imshow(np.sqrt(prob_density), cmap = mpl.colormaps['magma'])
-        ax.text(500,0, r'(n, l, m) = $({0}, {1}, {2})$'.format(n, l, m), color='#dfdfdf', fontsize='large') 
+        ax.text(480,0, f'(n, l, m) = ({n}, {l}, {m})', color='#dfdfdf', fontsize='large', ha='center',
+                va='top') 
         #ax.xaxis.set_visible(False)
         #ax.yaxis.set_visible(False)
         fig.tight_layout()
