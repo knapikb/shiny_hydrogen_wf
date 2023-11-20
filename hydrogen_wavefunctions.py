@@ -55,7 +55,7 @@ def angular_function(l, m, theta, phi):
 
     return C * Legendre * np.real(np.exp(1.j * m * phi))
 
-def wave_function (a0_scale_factor, n, l, m):
+def wave_function (a0_scale_factor, n, l, m, x, y):
 
     """
     Calculate the wave function radial and angular components. 
@@ -73,9 +73,6 @@ def wave_function (a0_scale_factor, n, l, m):
     numpy.array: Wavefunction
 
     """
-
-    x = y = np.linspace(-500,500,1000)
-    x, y = np.meshgrid(x,y)
 
     r = np.sqrt(x**2 + y**2) # grid to radial coordinates
 
