@@ -138,3 +138,31 @@ def plot_probability_density(n, l, m, a0_scale_factor):
     ax.text(1125, 40, 'Higher\nprobability', fontsize=12,)
     ax.text(1125, 990, 'Lower\nprobability', fontsize=12)
     #ax.invert_yaxis()
+
+def plot2(a0, n, l, r):
+
+    R_nl = radial_function(a0, n, l, r)
+    P_r = 4 * math.pi * r**2 * R_nl**2
+    print((R_nl.shape))
+
+    plt.plot(r/a0,P_r)
+    fig, ax = plt.subplots()
+    return fig
+
+x = np.linspace(-500,500,1000)
+y = np.linspace(-500,500,1000)
+x,y = np.meshgrid(x,y)
+r = np.sqrt(x**2 + y**2)
+
+a0 = (5.29177210903e-11) * 1e+11
+n = 3
+l = 0
+m = 0
+
+
+fig = plot2(a0, n, l, r)
+
+plt.show()
+
+
+        

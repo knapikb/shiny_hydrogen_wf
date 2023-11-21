@@ -50,19 +50,56 @@ app_ui = ui.page_fluid(
 
     ui.markdown(
             """
+            <br>
+
             This app graphs the solutions obtained from the time-independent 
-            Shrodinger equation for the hydrogen atom by taking the quantum numbers ```n```, 
-            ```l```, and ```m```. The hydrogen atom is a 2-body problem, but can be
-            simplified with the reduced mass assumption: 
+            Schrödinger equation of a single particle of mass ```m``` in a field ```V```. 
+
+            $$
+                (-\\frac{\\hbar^2}{2 m} \\nabla^2 + V ) \\psi = E \\psi
+            $$
+            
+            The hydrogen atom is a 2-body problem, but can be
+            simplified with the reduced mass assumption:
 
             $$ 
-            \mu = \\frac{m_p m_e}{m_p + m_e}
-            $$  
+            m_p \\gg m_e, \\mu = \\frac{m_p m_e}{m_p + m_e} \\sim m_e
+            $$
+
+            Accepts user inputs for quantum numbers ```n```, 
+            ```l```, and ```m```. 
+
             """
         ),
 
     ui.card(
+        ui.row(
+            ui.column(3, ui.input_numeric("n","Principal quantum number, n", value=1),
+            ),
+            ui.column(3, ui.input_numeric("l","Azimuthal quantum number, l", value=0),
+            ),
+            ui.column(3, ui.input_numeric("m","Magnetic quantum number, m", value=0),
+            ),
+            ui.column(3, ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
+            ),
 
+            #ui.input_numeric("n","Principal quantum number, n", value=1),
+            #ui.input_numeric("l","Azimuthal quantum number, l", value=0),
+            #ui.input_numeric("m","Magnetic quantum number, m", value=0),
+            #ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
+        ),
+    ),
+    
+    ui.row(
+        ui.column(6,
+                  ui.output_plot("plot1"),
+                  {"id": "sidebarPlot"}),
+        ui.column(6,
+                  "text2",
+                  {"style": "background-color: #00f000"}),
+        ),
+
+    ui.card(
         ui.layout_sidebar(
             ui.sidebar(   
                 ui.input_numeric("n","Principal quantum number, n", value=1),
@@ -70,9 +107,9 @@ app_ui = ui.page_fluid(
                 ui.input_numeric("m","Magnetic quantum number, m", value=0),
                 ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
             ),
-            {"style": "background-color: #000000"},
-            {"id": "sidebarPlot"},
-            ui.output_plot("plot1"),
+            #{"style": "background-color: #000000"},
+            #{"id": "sidebarPlot"},
+            #ui.output_plot("plot1"),
         ),
     ),
 
@@ -120,7 +157,7 @@ def server(input, output, session):
             x_npoints = x_upper - x_lower
             x = np.linspace(x_lower,x_upper,x_npoints)
 
-            buffer = 1.1
+            buffer = 1.0
 
             y_lower = round(x_lower/(input.sidebarPlot_aspectRatio()*buffer))
             y_upper = round(x_upper/(input.sidebarPlot_aspectRatio()*buffer))
@@ -165,6 +202,16 @@ def server(input, output, session):
         #fig.tight_layout()
         #fig.savefig('fig.png')
         return fig
+    
+    @output
+    @render.plot()
+    def plot2() -> object:
+        a0_scale_factor = input.a0()
+        n = input.n()
+        l = input.l()
+        m = input.m()
 
-app = App(app_ui, server, debug = True)        
 
+        return fig
+
+app = App(app_ui, server, debug = True)     
