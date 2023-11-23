@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
 import shinyswatch
+import math
 
 app_ui = ui.page_fluid(
     shinyswatch.theme.darkly(),
@@ -25,10 +26,6 @@ app_ui = ui.page_fluid(
         window.onresize = function() {
             sendElementAspectRatio('sidebarPlot');
         };
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            sendElementAspectRatio('sidebarPlot');
-        });
     """),
     
     ui.tags.head(
@@ -80,7 +77,7 @@ app_ui = ui.page_fluid(
             ),
             ui.column(3, ui.input_numeric("m","Magnetic quantum number, m", value=0),
             ),
-            ui.column(3, ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
+            ui.column(3, ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=10)
             ),
 
             #ui.input_numeric("n","Principal quantum number, n", value=1),
@@ -95,23 +92,9 @@ app_ui = ui.page_fluid(
                   ui.output_plot("plot1"),
                   {"id": "sidebarPlot"}),
         ui.column(6,
-                  "text2",
-                  {"style": "background-color: #00f000"}),
+                  ui.output_plot("plot2"),
+                  {"style": "background-color: #000000"}),
         ),
-
-    ui.card(
-        ui.layout_sidebar(
-            ui.sidebar(   
-                ui.input_numeric("n","Principal quantum number, n", value=1),
-                ui.input_numeric("l","Azimuthal quantum number, l", value=0),
-                ui.input_numeric("m","Magnetic quantum number, m", value=0),
-                ui.input_numeric("a0",("Scaling factor, a", ui.tags.sub(0)), value=0.7)
-            ),
-            #{"style": "background-color: #000000"},
-            #{"id": "sidebarPlot"},
-            #ui.output_plot("plot1"),
-        ),
-    ),
 
     ui.output_text('aspect_ratio'),
     ui.output_text('window_width'),
@@ -206,12 +189,41 @@ def server(input, output, session):
     @output
     @render.plot()
     def plot2() -> object:
-        a0_scale_factor = input.a0()
+        from matplotlib.ticker import AutoMinorLocator
+
         n = input.n()
         l = input.l()
         m = input.m()
 
+        x = np.linspace(-500,500,1000)
+        y = np.linspace(-500,500,1000)
+        x,y = np.meshgrid(x,y)
+        
+        r = np.sqrt(x**2 + y**2)
+        a0 = 10 # Don't scale Bohr for plotting purposes.
 
+        R_nl = hwf.radial_function(a0, n, l, r)
+
+        P_r = 4 * math.pi * r**2 * R_nl**2
+        
+        fig, ax = plt.subplots()
+        plt.plot(r/a0,P_r, color = 'white', linewidth = 1)
+        plt.gca().set_yticklabels([])
+        plt.gca().xaxis.set_minor_locator(AutoMinorLocator())
+        ax.set_xlim([0, 25])
+        #ax.set_ylim(bottom=0, top=None)
+        plt.xlabel(r'$\frac{r}{a_{0}}$',fontsize='x-large',color='#ffffff')
+        plt.ylabel(r'4$\pi$$r^2$ R$_n$$_l^2$',fontsize='medium',color='#ffffff')
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.xaxis.label.set_color('white')
+        ax.yaxis.label.set_color('white')
+        for spine in ax.spines.values():
+            spine.set_edgecolor('white')
+
+        fig.patch.set_facecolor('#000000') 
+        ax.set_facecolor('#000000')
+        
         return fig
 
 app = App(app_ui, server, debug = True)     
