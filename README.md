@@ -12,7 +12,7 @@ After installing libraries, ```app.py``` runs a Shiny application through the de
 
 The app graphs the probability density plot on the left, and the probability specific to the radial componenent on the right. User accepted inputs are the three quantum numbers ```n```, ```l```, and ```m```, as well as a *Bohr* radius scaling factor to help visualize these functions.
 
-[ui](ui.PNG)
+![ui](ui.PNG)
 
 ## Sources
 - University of Washington, Seattle, Phys 227 lecture notes: https://faculty.washington.edu/seattle/physics227/reading/reading-26-27.pdf, for angular and radial component solutions (pages 337 and 347, respectively).
