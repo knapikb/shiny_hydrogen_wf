@@ -2,7 +2,7 @@
 
 ## Objectives and Overview
 
-This is an app for graphing the probability density wavefunctions for a hydrogen 
+This is an app for plotting the wavefuntion's probability densities for a hydrogen 
 atom. First and foremost this was an excuse to play around with the relatively new
 [Shiny for Python](https://shiny.posit.co/py/docs/overview.html).   
 
